@@ -13,22 +13,17 @@ final class ViewController: UIViewController {
     
     @IBOutlet private weak var searchBar: UISearchBar! {
         didSet {
-            searchBar.subviews.forEach({
-                $0.subviews
-                    .filter({ $0.isKind(of: UIImageView.self) })
-                    .forEach({ ($0 as! UIImageView).alpha = 0 })
-            })
+            searchBar.autocapitalizationType = .none
         }
     }
     @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet weak var loadingView: UIActivityIndicatorView!
     
-    fileprivate var throttle = Throttle(runInterval: 1)
+    fileprivate var throttle = Throttle(runInterval: 1.0)
     fileprivate var repositories = [RepositoryResponse]() {
         didSet {
             tableView.separatorStyle = repositories.isEmpty ? .none : .singleLine
-            DispatchQueue.main.async { [weak self] in
-                self?.tableView.reloadData()
-            }
+            tableView.reloadData()
         }
     }
 
@@ -62,36 +57,45 @@ extension ViewController: UISearchBarDelegate {
             return
         }
         
+        if repositories.isEmpty {
+            loadingView.startAnimating()
+        }
+        
         throttle.execute {
             GitHubAPI.shared.searchRepositories(withQuery: searchText) { [weak self] result in
                 guard let strongSelf = self else { return }
-                switch result {
-                case .success(let response):
-                    strongSelf.repositories = response.items
-                case .failure(let error):
-                    strongSelf.showAlert(withMessage: error.localizedDescription)
+                
+                DispatchQueue.main.async {
+                    strongSelf.loadingView.stopAnimating()
+                    switch result {
+                    case .success(let response):
+                        strongSelf.repositories = response.items
+                    case .failure(let error):
+                        strongSelf.showAlert(withMessage: error.localizedDescription)
+                    }
                 }
             }
         }
     }
     
     private func showAlert(withMessage message: String) {
-        
         let alert = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.present(alert, animated: true, completion: nil)
-        }
+        present(alert, animated: true, completion: nil)
     }
 }
 
 // MARK: - Table View
 
 extension ViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let safari = SFSafariViewController(url: repositories[indexPath.row].url)
         present(safari, animated: true, completion: nil)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
     }
 }
 

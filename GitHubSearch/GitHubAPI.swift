@@ -19,11 +19,11 @@ enum APIError: Error {
     case parseFailed
     case raw(NSError)
     
-    var localizedDescription: String {
+    var localizedDescription: String? {
         switch self {
         case .noResponse: return "Empty response."
         case .parseFailed: return "Parsing JSON failed."
-        case .raw(let error): return error.description
+        case .raw(let error): return error.userInfo[NSLocalizedDescriptionKey] as? String
         }
     }
 }
@@ -34,7 +34,6 @@ struct GitHubAPI {
     
     func searchRepositories(withQuery query: String, withCompletionHandler completionHandler: @escaping (Result<SearchRepositoryResponse, APIError>) -> Void) {
         
-        debugPrint("query = '\(query)'")
         var components = URLComponents(string: "https://api.github.com/search/repositories")!
         components.queryItems = [URLQueryItem(name: "q", value: query)]
         

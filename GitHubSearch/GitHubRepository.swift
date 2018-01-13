@@ -15,6 +15,16 @@ struct SearchRepositoryResponse: Decodable {
     enum CodingKeys: String, CodingKey {
         case items
     }
+    
+    init(items: [RepositoryResponse]) {
+        self.items = items
+    }
+    
+    init(from decoder: Decoder) {
+        let container = try? decoder.container(keyedBy: CodingKeys.self)
+        let items = try? container?.decode(Array<RepositoryResponse>.self, forKey: .items) ?? []
+        self.init(items: items!)
+    }
 }
 
 struct RepositoryResponse: Decodable {
