@@ -11,3 +11,6 @@ Demo of GitHub search app that uses only pure Swift / iOS SDK.
 
 # Requirements
 - Xcode9.2
+
+# License
+MIT © [horimislime](https://horimisli.me/about)
