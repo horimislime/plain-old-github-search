@@ -6,7 +6,7 @@ Demo of GitHub search app that uses only pure Swift / iOS SDK.
 
 # Specification
 - Enter keyword(s) to search GitHub repos incrementally
-- Shows search result up to 40 (no paging)
+- Shows search result up to 30 (no paging)
 - Tap to open repository page using Safari ViewController
 
 # Requirements
