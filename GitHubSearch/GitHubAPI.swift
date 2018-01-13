@@ -35,9 +35,10 @@ struct GitHubAPI {
     func searchRepositories(withQuery query: String, withCompletionHandler completionHandler: @escaping (Result<SearchRepositoryResponse, APIError>) -> Void) {
         
         debugPrint("query = '\(query)'")
-        let urlString = "https://api.github.com/search/repositories?q=\(query)"
+        var components = URLComponents(string: "https://api.github.com/search/repositories")!
+        components.queryItems = [URLQueryItem(name: "q", value: query)]
         
-        let task = URLSession.shared.dataTask(with: URL(string: urlString)!) { data, _, error in
+        let task = URLSession.shared.dataTask(with: components.url!) { data, _, error in
             
             if let error = error {
                 completionHandler(.failure(.raw(error as NSError)))
