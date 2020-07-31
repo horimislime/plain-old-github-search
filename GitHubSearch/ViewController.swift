@@ -81,7 +81,7 @@ extension ViewController: UISearchBarDelegate {
     private func showAlert(withMessage message: String) {
         let alert = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
 }
 
@@ -91,7 +91,7 @@ extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let safari = SFSafariViewController(url: repositories[indexPath.row].url)
-        present(safari, animated: true, completion: nil)
+        present(safari, animated: true)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
