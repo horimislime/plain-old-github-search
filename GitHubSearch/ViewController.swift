@@ -62,7 +62,7 @@ extension ViewController: UISearchBarDelegate {
         }
         
         throttle.execute {
-            GitHubAPI.shared.searchRepositories(withQuery: searchText) { [weak self] result in
+            GitHubAPI.searchRepositories(withQuery: searchText) { [weak self] result in
                 guard let strongSelf = self else { return }
                 
                 DispatchQueue.main.async {
@@ -102,7 +102,7 @@ extension ViewController: UITableViewDelegate {
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repositories.count
+        repositories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
