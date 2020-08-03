@@ -17,15 +17,10 @@ final class ViewController: UIViewController {
         }
     }
     @IBOutlet private weak var tableView: UITableView!
-    @IBOutlet weak var loadingView: UIActivityIndicatorView!
+    @IBOutlet private weak var loadingView: UIActivityIndicatorView!
     
-    fileprivate var throttle = Throttle(runInterval: 1.0)
-    fileprivate var repositories = [RepositoryResponse]() {
-        didSet {
-            tableView.separatorStyle = repositories.isEmpty ? .none : .singleLine
-            tableView.reloadData()
-        }
-    }
+    private var throttle = Throttle(runInterval: 1.0)
+    private var repositories: [RepositoryResponse] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,9 +35,15 @@ final class ViewController: UIViewController {
             tableView.deselectRow(at: selectedIndexPath, animated: true)
         }
     }
+    
+    private func reloadContents(with repositories: [RepositoryResponse]) {
+        self.repositories = repositories
+        tableView.separatorStyle = self.repositories.isEmpty ? .none : .singleLine
+        tableView.reloadData()
+    }
 }
 
-// MARK: - Search Bar
+// MARK: - UISearchBarDelegate
 
 extension ViewController: UISearchBarDelegate {
     
@@ -53,7 +54,7 @@ extension ViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
         guard searchText.count > 0 else {
-            repositories = []
+            reloadContents(with: [])
             return
         }
         
@@ -62,14 +63,14 @@ extension ViewController: UISearchBarDelegate {
         }
         
         throttle.execute {
-            GitHubAPI.shared.searchRepositories(withQuery: searchText) { [weak self] result in
+            GitHubAPI.searchRepositories(withQuery: searchText) { [weak self] result in
                 guard let strongSelf = self else { return }
                 
                 DispatchQueue.main.async {
                     strongSelf.loadingView.stopAnimating()
                     switch result {
                     case .success(let response):
-                        strongSelf.repositories = response.items
+                        strongSelf.reloadContents(with: response.items)
                     case .failure(let error):
                         strongSelf.showAlert(withMessage: error.localizedDescription)
                     }
@@ -81,17 +82,17 @@ extension ViewController: UISearchBarDelegate {
     private func showAlert(withMessage message: String) {
         let alert = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
 }
 
-// MARK: - Table View
+// MARK: - UITableViewDelegate
 
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let safari = SFSafariViewController(url: repositories[indexPath.row].url)
-        present(safari, animated: true, completion: nil)
+        present(safari, animated: true)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -99,10 +100,12 @@ extension ViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - UITableViewDataSource
+
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return repositories.count
+        repositories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -8,11 +8,6 @@
 
 import Foundation
 
-enum Result<Value, Error: Swift.Error> {
-    case success(Value)
-    case failure(Error)
-}
-
 enum APIError: Error {
     
     case noResponse
@@ -28,11 +23,8 @@ enum APIError: Error {
     }
 }
 
-struct GitHubAPI {
-    
-    static let shared = GitHubAPI()
-    
-    func searchRepositories(withQuery query: String, withCompletionHandler completionHandler: @escaping (Result<SearchRepositoryResponse, APIError>) -> Void) {
+enum GitHubAPI {
+    static func searchRepositories(withQuery query: String, withCompletionHandler completionHandler: @escaping (Result<SearchRepositoryResponse, APIError>) -> Void) {
         
         var components = URLComponents(string: "https://api.github.com/search/repositories")!
         components.queryItems = [URLQueryItem(name: "q", value: query)]
