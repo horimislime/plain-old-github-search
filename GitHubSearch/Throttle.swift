@@ -9,26 +9,18 @@
 import Foundation
 
 final class Throttle {
-    
-    private let queue = DispatchQueue(label: "com.example.github-search.throttle")
-    
-    private var lastJob: DispatchWorkItem?
+    private let runInterval: TimeInterval
     private var lastRun = Date.distantPast
-    private var runInterval: TimeInterval
     
     init(runInterval: TimeInterval) {
         self.runInterval = runInterval
     }
     
     func execute(block: @escaping () -> ()) {
-        lastJob?.cancel()
-        lastJob = DispatchWorkItem { [weak self] in
-            self?.lastRun = Date()
-            block()
-        }
-        
-        let delay = Date().seconds(after: lastRun) > runInterval ? 0 : runInterval
-        queue.asyncAfter(deadline: .now() + Double(delay), execute: lastJob!)
+        let now = Date()
+        guard now.seconds(after: lastRun) > runInterval else { return }
+        block()
+        lastRun = now
     }
 }
 
