@@ -1,5 +1,7 @@
 # plain-old-github-search
-Demo of GitHub search app that uses only pure Swift / iOS SDK.
+[![Language: Swift 5.2](https://img.shields.io/badge/swift-5.2-4BC51D.svg?style=flat)](https://developer.apple.com/swift)
+
+GitHub repository search app that only uses pure Swift / iOS SDK.
 
 # Screenshot
 ![Screen Shot](/screenshot/app.gif)
@@ -7,10 +9,10 @@ Demo of GitHub search app that uses only pure Swift / iOS SDK.
 # Specification
 - Enter keyword(s) to search GitHub repos incrementally
 - Shows search result up to 30 (no paging)
-- Tap to open repository page using Safari ViewController
+- Tap cell to view repository detail using SafariViewController
 
 # Requirements
-- Xcode9.2
+- Xcode 11.6
 
 # License
 MIT © [horimislime](https://horimisli.me/about)
