@@ -3,13 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'styles.dart';
 
 class SearchBar extends StatelessWidget {
-  const SearchBar({
-    @required this.controller,
-    @required this.focusNode,
-  });
+  SearchBar({this.controller, this.focusNode, this.onChanged});
 
   final TextEditingController controller;
   final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +33,7 @@ class SearchBar extends StatelessWidget {
                 focusNode: focusNode,
                 style: Styles.searchText,
                 cursorColor: Styles.searchCursorColor,
+                onChanged: onChanged,
               ),
             ),
             GestureDetector(

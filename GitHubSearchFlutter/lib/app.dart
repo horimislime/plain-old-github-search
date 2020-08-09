@@ -1,4 +1,6 @@
+import 'package:GitHubSearchFlutter/app_state_model.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'model/github_repository.dart';
 import 'repository_row_item.dart';
 import 'search_bar.dart';
@@ -21,15 +23,8 @@ class RepositorySearchPage extends StatefulWidget {
 }
 
 class _RepositorySearchPageState extends State<RepositorySearchPage> {
-  TextEditingController _controller;
-  FocusNode _focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController()..addListener(_onTextChanged);
-    _focusNode = FocusNode();
-  }
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
@@ -40,14 +35,10 @@ class _RepositorySearchPageState extends State<RepositorySearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<GitHubRepository> repositories = const [
-      GitHubRepository(name: 'flutter/flutter'),
-      GitHubRepository(name: 'apple/swift')
-    ];
+    final model = Provider.of<AppStateModel>(context);
+    final repositories = model.searchResults;
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Styles.scaffoldBackground
-      ),
+      decoration: const BoxDecoration(color: Styles.scaffoldBackground),
       child: SafeArea(
         child: Column(
           children: <Widget>[
@@ -60,12 +51,17 @@ class _RepositorySearchPageState extends State<RepositorySearchPage> {
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: SearchBar(
-        controller: _controller,
-        focusNode: _focusNode,
-      ),
+    return Consumer<AppStateModel>(
+      builder: (context, model, child) {
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: SearchBar(
+            controller: _controller,
+            focusNode: _focusNode,
+            onChanged: (text) => model.search(text),
+          ),
+        );
+      },
     );
   }
 
@@ -80,11 +76,5 @@ class _RepositorySearchPageState extends State<RepositorySearchPage> {
         itemCount: repositories.length,
       ),
     );
-  }
-
-  void _onTextChanged() {
-    setState(() {
-      // TODO: Call API
-    });
   }
 }
