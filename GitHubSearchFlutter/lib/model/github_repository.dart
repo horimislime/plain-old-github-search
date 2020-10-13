@@ -19,8 +19,8 @@ class GitHubRepository {
       name: json['name'],
       description: json['description'],
       language: json['language'],
-      starCount: json['starCount'],
-      updatedAt: json['updatedAt'],
+      starCount: json['stargazers_count'],
+      updatedAt: DateTime.parse(json['updated_at']),
       url: json['url'],
     );
   }
