@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'model/github_repository.dart';
 import 'styles.dart';
 
@@ -38,10 +39,13 @@ class RepositoryRowItem extends StatelessWidget {
                     style: Styles.rowItemLarge,
                   ),
                   const Padding(padding: EdgeInsets.only(top: 8)),
-                  Text(
-                    repository.name,
-                    style: Styles.rowItemSmall,
-                  )
+                  if (repository.description != null)
+                    Text(
+                      repository.description,
+                      style: Styles.rowItemSmall,
+                    ),
+                  Text(DateFormat.yMMMd().format(repository.updatedAt),
+                      style: Styles.rowItemSmall)
                 ],
               ),
             ),
